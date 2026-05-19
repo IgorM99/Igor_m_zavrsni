@@ -1,0 +1,3 @@
+﻿  exercise.c
+C:\Users\student\source\repos\Projektkv1Igor\exercise.c(168,14): warning C4553: '==': result of expression not used; did you intend '='?
+  Projektkv1Igor.vcxproj -> C:\Users\student\source\repos\Projektkv1Igor\Debug\Projektkv1Igor.exe
