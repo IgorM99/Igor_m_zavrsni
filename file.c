@@ -14,21 +14,12 @@ void saveToFile(EXERCISE* exercises, int count)
 
     if (fp == NULL)
     {
-        perror("File open error");
+        perror("Error opening file");
         return;
     }
 
     fwrite(&count, sizeof(int), 1, fp);
-
-    fwrite(exercises,
-        sizeof(EXERCISE),
-        count,
-        fp);
-
-    if (ferror(fp))
-    {
-        printf("Write error: %s\n", strerror(errno));
-    }
+    fwrite(exercises, sizeof(EXERCISE), count, fp);
 
     fclose(fp);
 }
@@ -45,53 +36,34 @@ EXERCISE* loadFromFile(int* count)
 
     fread(count, sizeof(int), 1, fp);
 
-    EXERCISE* exercises =
-        (EXERCISE*)calloc(*count,
-            sizeof(EXERCISE));
+    EXERCISE* exercises = (EXERCISE*)malloc(*count * sizeof(EXERCISE));
 
     if (exercises == NULL)
     {
-        perror("Memory allocation error");
-
+        perror("Memory allocation failed");
         fclose(fp);
-
         return NULL;
     }
 
-    fread(exercises,
-        sizeof(EXERCISE),
-        *count,
-        fp);
-
-    if (feof(fp))
-    {
-        printf("End of file reached.\n");
-    }
+    fread(exercises, sizeof(EXERCISE), *count, fp);
 
     fclose(fp);
 
     return exercises;
 }
 
-void copyFile(const char* source,
-    const char* destination)
-{
+void copyFile(const char* source, const char* destination) {
     FILE* src = fopen(source, "rb");
     FILE* dest = fopen(destination, "wb");
 
-    if (src == NULL || dest == NULL)
-    {
+    if (src == NULL || dest == NULL) {
         perror("Copy file error");
         return;
     }
-
     char ch;
-
-    while ((ch = fgetc(src)) != EOF)
-    {
+    while ((ch = fgetc(src)) != EOF) {
         fputc(ch, dest);
     }
-
     fclose(src);
     fclose(dest);
 }
