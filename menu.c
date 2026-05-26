@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
-#include "menu.h"
 #include "exercise.h"
 
 void menu(void)
@@ -11,7 +10,6 @@ void menu(void)
     do
     {
         printf("\n=== GYM TRACKER ===\n");
-
         printf("1. Add exercise\n");
         printf("2. View exercises\n");
         printf("3. Update exercise\n");
@@ -22,8 +20,12 @@ void menu(void)
         printf("8. Linked list view\n");
         printf("9. Exit\n");
 
-        printf("Choice: ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input!\n");
+            clearInputBuffer();
+            choice = 0;
+            continue;
+        }
 
         switch (choice)
         {
@@ -46,21 +48,17 @@ void menu(void)
         case SORT_EXERCISES:
             sortExercises();
             break;
-
         case SEARCH_EXERCISE:
             searchExercise();
             break;
-
         case FILE_INFO:
             showFileInfo();
             break;
-
         case LINKED_LIST_VIEW:
             linkedListView();
             break;
 
         case EXIT_PROGRAM:
-            printf("Program closed.\n");
             break;
 
         default:
