@@ -2,7 +2,7 @@
 #define EXERCISE_H
 
 #define MAX_NAME 50
-#define CLEAR_BUFFER() while(getchar() != '\n')
+
 
 static inline void clearInputBuffer(void) {
     while (getchar() != '\n');
