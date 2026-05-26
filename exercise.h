@@ -1,18 +1,14 @@
 #ifndef EXERCISE_H
 #define EXERCISE_H
 
-#include <stdio.h>
-
 #define MAX_NAME 50
 #define CLEAR_BUFFER() while(getchar() != '\n')
 
-static inline void clearInputBuffer(void)
-{
+static inline void clearInputBuffer(void) {
     while (getchar() != '\n');
 }
 
-typedef enum
-{
+typedef enum {
     ADD_EXERCISE = 1,
     VIEW_EXERCISES,
     UPDATE_EXERCISE,
@@ -22,35 +18,27 @@ typedef enum
     FILE_INFO,
     LINKED_LIST_VIEW,
     EXIT_PROGRAM
+}MENUOPTION;
 
-} MENUOPTION;
-
-typedef union
-{
+typedef union {
     float kilograms;
     int bodyweight;
+}EXERCISEDATA;
 
-} EXERCISEDATA;
-
-typedef struct
-{
+typedef struct {
     int id;
     char name[MAX_NAME];
     int sets;
     int reps;
     float weight;
     float personalRecord;
-
     EXERCISEDATA data;
+}EXERCISE;
 
-} EXERCISE;
-
-typedef struct Node
-{
+typedef struct Node {
     EXERCISE exercise;
     struct Node* next;
-
-} Node;
+}Node;
 
 void addExercise(void);
 void viewExercises(void);
@@ -60,5 +48,6 @@ void sortExercises(void);
 void searchExercise(void);
 void showFileInfo(void);
 void linkedListView(void);
+
 
 #endif
