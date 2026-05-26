@@ -1,0 +1,324 @@
+1. Minimum koji studenti MORAJU imati je implementirani CRUID. 
+Create-Read-Update-InsertDelete i tu se misli na kontekst sadržaja koji se zapisuje u datoteku koja može biti tekstualna ili binarna.
+ Dalje samo nadograđujete svoj program! 
+
+
+void addExercise(void);
+void viewExercises(void);
+void updateExercise(void);
+void deleteExercise(void);
+void sortExercises(void);
+
+
+2. Odabir konkretnih primitivnih tipova podataka za rad s cjelobrojnim i realnim konstantama. 
+
+
+exercise.h
+typedef struct {
+    int id;
+    char name[MAX_NAME];
+    int sets;
+    int reps;
+    float weight;
+    float personalRecord;
+    EXERCISEDATA data;
+}EXERCISE;
+
+
+3. Odabir konkretnih složenih tipova podataka za rad sa specifičnim objektima. 
+
+
+typedef struct {
+    int id;
+    char name[MAX_NAME];
+    int sets;
+    int reps;
+    float weight;
+    float personalRecord;
+    EXERCISEDATA data;
+}EXERCISE;
+
+4. Primjena typedef sa strukturama i unijama, po potrebi s enum tipovima podataka tamo gdje treba.
+ 
+
+ typedef enum {
+    ADD_EXERCISE = 1,
+    VIEW_EXERCISES,
+    UPDATE_EXERCISE,
+    DELETE_EXERCISE,
+    SORT_EXERCISES,
+    SEARCH_EXERCISE,
+    FILE_INFO,
+    LINKED_LIST_VIEW,
+    EXIT_PROGRAM
+}MENUOPTION;
+
+5. Imenovanje identifikatora (varijabli, konstanti, polja, funkcija, pokazivača…) – upotreba camelCase, PascalCase i snake_case konzistento kroz cijeli projekt.
+
+camelCase koristen
+
+
+6. Primjena ključne riječi static za globalne i lokalne varijable. 
+
+exercise.c
+static int recursiveBinarySearch(EXERCISE* exercises,int left,int right,int id) 
+static int findNextId(void)
+
+7. Organizacija izvornog kôda. 
+main.c 
+menu.c
+exercise.h 
+exercise.h itd..
+
+8. Primjena extern ključne riječi za globalne varijable. 
+
+
+file.h 
+extern const char* FILE_NAME;
+
+9. Ako su funkcije jednostavne koristiti makro funkcije ili inline funkcije. 
+
+exercise.h
+static inline void clearInputBuffer(void) {
+    while (getchar() != '\n');
+}
+
+
+10. Izbornik/podizbornici. 
+
+menu.c
+switch (choice)
+        {
+        case ADD_EXERCISE:
+            addExercise();
+            break;
+
+        case VIEW_EXERCISES:
+            viewExercises();
+            break; 
+	itd.. 
+
+ 11. Kod izbornika koristiti enum tipove ili makro simbole. 
+
+exercise.h
+typedef enum {
+    ADD_EXERCISE = 1,
+    VIEW_EXERCISES,
+    UPDATE_EXERCISE,
+    DELETE_EXERCISE,
+    SORT_EXERCISES,
+    SEARCH_EXERCISE,
+    FILE_INFO,
+    LINKED_LIST_VIEW,
+    EXIT_PROGRAM
+}MENUOPTION;
+
+12. Generalno upotreba pokazivača tamo gdje su potrebni.
+
+Kroz cijeli projekt. Na primjer:
+
+int compareByWeight(const void* a,const void* b)
+{
+    EXERCISE* e1 = (EXERCISE*)a;
+    EXERCISE* e2 = (EXERCISE*)b;
+
+    if (e1->weight > e2->weight)
+    {
+        return -1;
+    }
+
+    if (e1->weight < e2->weight)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+13. Generalno upotreba struktura i funkcija. 
+
+Kroz cijeli projekt: EXERCISE, MENUOPTION
+		     addExercise(), searchExercise()
+
+14. Zaštita parametara kod svih funkcija. 
+
+printf("Weight: ");
+    if (scanf("%f", &newExercise.weight) != 1) {
+
+           printf("Invalid input!\n");
+           clearInputBuffer();
+           free(exercises);
+           return;
+    }
+ 
+ili 
+
+void viewExercises(void)
+{
+    int count = 0;
+
+    EXERCISE* exercises = loadFromFile(&count);
+
+    if (exercises == NULL || count == 0)
+    {
+        printf("No exercises found.\n");
+        return;
+    }
+
+15. Koristiti statički zauzeta polja gdje su potrebna, nikako ne koristiti VLA polja. 
+
+exercise.h 
+
+#define MAX_NAME 50
+char name[MAX_NAME];
+
+16. Koristiti dinamičko zauzimanje memorije za bilo koji tip podatka, osobito za složene tipove podataka. 
+
+file.c
+
+EXERCISE* exercises = (EXERCISE*)malloc(*count * sizeof(EXERCISE));
+
+17. Koristiti funkcije malloc(), calloc(), realloc(), free() – neku od njih, ako ne i sve. 
+
+exercise.c
+
+EXERCISE* temp = (EXERCISE*)realloc(exercises,(count + 1) * sizeof(EXERCISE));
+
+file.c
+
+EXERCISE* exercises = (EXERCISE*)malloc(*count * sizeof(EXERCISE));
+
+18. Sigurno brisanje memorije koja je dinamički zauzeta, anuliranje memorijskog prostora, provjera pokazivača kako se ne bi dogodila pogreška double free() i anuliranje svih pokazivača koji su bili usmjereni na memorijski prostor koji se dinamički zauzeo.
+
+exercise.c 
+npr updateExercise
+ free(exercises);
+ exercises = NULL;
+
+19. Datoteke, koristiti tekstualnu ili binarnu, provjera pokazivača i zatvaranje datoteke. 
+
+file.c 
+
+void saveToFile(EXERCISE* exercises, int count)
+{
+    FILE* fp = fopen(FILE_NAME, "wb");
+
+    if (fp == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    fwrite(&count, sizeof(int), 1, fp);
+    fwrite(exercises, sizeof(EXERCISE), count, fp);
+
+    fclose(fp);
+}
+
+20. Koristiti funkcije fseek(), ftell(), rewind(), ovisno o potrebi – neku od njih ako ne sve. 
+
+exercise.c 
+
+void showFileInfo(void)
+{
+    FILE* fp = fopen(FILE_NAME,"rb");
+
+    if (fp == NULL)
+    {
+        perror("File error");
+        return;
+    }
+
+    fseek(fp,0,SEEK_END);
+
+    long size =ftell(fp);
+
+    rewind(fp);
+
+    printf("File size: %ld bytes\n",size);
+    fclose(fp);
+}
+
+21. Koristiti funkcije remove(), rename(), po potrebi implementirati funkciju za kopiranje datoteka. 
+
+exercise.c 
+
+deleteExercise
+
+if (remove(FILE_NAME) != 0) {
+        perror("Remove failed");
+    }
+
+    if (rename("temp.bin", FILE_NAME) != 0)
+    {
+        perror("Rename failed");
+     }
+
+22. Upravljati s pogreškama, errno, perror(), strerror(), feof(), ferror() – neku od njih ako ne sve. 
+
+file.c
+
+void saveToFile(EXERCISE* exercises, int count)
+{
+    FILE* fp = fopen(FILE_NAME, "wb");
+
+    if (fp == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    fwrite(&count, sizeof(int), 1, fp);
+    fwrite(exercises, sizeof(EXERCISE), count, fp);
+
+    fclose(fp);
+}
+
+23. Sortiranje – preporuka koristiti ugrađenu qsort() funkciju, inače se može koristiti bilo koja funkcija sortiranja. 
+
+exercise.c 
+sortExercise
+
+void sortExercises(void)
+{
+    int count = 0;
+
+    EXERCISE* exercises = loadFromFile(&count);
+
+    if (exercises == NULL)
+    {
+        return;
+    }
+
+    qsort(exercises,count,sizeof(EXERCISE),compareByWeight);
+
+    saveToFile(exercises,count);
+
+    free(exercises);
+    exercises = NULL;
+
+    printf("Exercises sorted by weight descending.\n");
+}
+
+24. Pretraživanje – preporuka koristiti ugrađenu bsearch() funkciju, inače se može koristiti bilo koja funkcija pretraživanja. 
+
+	exercise.c
+	searchExercise
+
+	EXERCISE* found =(EXERCISE*)bsearch(&id,exercises,count,sizeof(EXERCISE),compareById);
+
+25. Rekurzije je najlakše koristiti primjenom rekurzivnih algoritama sortiranja kao što su quick sort, merge sort, insert sort ili pretraživanja kao što je binary search.
+	
+	exercise.c
+
+	static int recursiveBinarySearch(EXERCISE* exercises,int left,int right,int id)
+
+26. Pokazivače na funkcije je najlakše koristiti upotrebom funkcije qsort() ili bsearch() iz standardne biblioteke. 
+
+ 	int compareById(const void* key,const void* element)
+ 	int compareByWeight(const void* a,const void* b)  
+
+ 	saljem ih u qsort i bsearch
+
+	qsort(exercises,count,sizeof(EXERCISE),compareByWeight);
+	EXERCISE* found =(EXERCISE*)bsearch(&id,exercises,count,sizeof(EXERCISE),compareById);
